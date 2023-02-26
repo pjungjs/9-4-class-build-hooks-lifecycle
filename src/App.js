@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import days from "./data";
 const colors = [
   "papayawhip",
@@ -16,6 +17,67 @@ function App() {
   const [number, setNumber] = useState(0);
   const [today, setToday] = useState({});
   const [vibe, setVibe] = useState("");
+
+  //function that doesn't update state on a component mounting (i.e.: page load)
+  // function getData() {
+  //   console.log("I am getting data");
+  // }
+
+  // //this code will trigger an infinite loop:
+  // useEffect(() => {
+  //   getSomeValue();
+  //   getAnotherValue();
+  // }, [someValue, anotherValue])
+
+  // //correct way to do:
+  // useEffect(() => {
+  //   getSomeValue();
+  // }, [someValue])
+  // useEffect(() => {
+  //   getAnotherValue();
+  // }, [anotherValue])
+
+  useEffect(() => {
+    setNumber(Math.floor(Math.random() * 100))
+  }, [])
+  
+  useEffect(() => {
+    setToday(days[index])
+  }, [index])
+
+  useEffect(() => {
+    console.log(vibe)
+  }, [vibe])
+
+  //color changes when the month changes
+  useEffect(() => {
+    setColor(colors[index])
+  }, [today.month])
+
+  useEffect(() => {
+    getFeatureDog()
+  }, [])
+
+  // //with fetch (then and catch):
+  // function getFeatureDog() {
+  //   fetch(`https://dog.ceo/api/breeds/image/random`)
+  //     .then((response) => response.json())
+  //     .then((json) => {
+  //       setDog(json);
+  //     })
+  //     .catch((error) =>  {
+  //       console.log(error)
+  //     })
+  // }
+  //with axios (try and catch):
+  async function getFeatureDog() {
+    try {
+      const response = await axios(`https://dog.ceo/api/breeds/image/random`);
+      setDog(response.data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   function handleOnChange(event) {
     setVibe(event.target.value);
@@ -47,7 +109,7 @@ function App() {
           <h5>{vibe}</h5>
         </div>
         <div className="dog">
-          <button>Change dog</button>
+          <button onClick={getFeatureDog}>Change dog</button>
           <h2>Featured dog:</h2>
           <img src={dog.message} alt="Featured Dog" />
         </div>
